@@ -4,7 +4,7 @@ module Counter_TB();
 	reg Load, Clk;
 	wire K;
 	
-	reg [2:0] i;
+	reg [5:0] i;
 
 	Counter DUT (
 		.Load(Load),
@@ -23,14 +23,9 @@ module Counter_TB();
 		Load = 0;
 		#100;
 		Load = 1;
-		#20;
-		Load = 0;
-		#100;
-		Load = 1;
-		#10 $stop;
 	end
 	
-	 
+	initial #800 $stop;
 	initial $init_signal_spy("DUT/Counter/i", "i", 1); 
 
 	 
