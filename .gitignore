@@ -4,5 +4,4 @@ output_files/
 simulation/
 *.v.bak
 *.bak
-*.qws
 *.rpt

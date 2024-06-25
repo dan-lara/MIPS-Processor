@@ -4,7 +4,7 @@ module CONTROL (
 );
 
 	localparam s0 = 2'b00, s1 = 2'b01, s2 = 2'b10, s3 = 2'b11;
-	(*keep=1*) reg [1:0] state = s0;
+	reg [1:0] state;
 
 	always @(posedge Clk) begin
 		case(state) 
