@@ -2,7 +2,7 @@ module Counter(
 	input Load, Clk,
 	output reg K
 );
-    reg [5:0] i;
+   reg [5:0] i;
 
 	always @(posedge Clk, posedge Load) begin
 		if (Load) begin

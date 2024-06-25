@@ -21,8 +21,7 @@ module Counter_TB();
 		Load = 1;
 		#20;
 		Load = 0;
-		#100;
-		Load = 1;
+		
 	end
 	
 	initial #800 $stop;

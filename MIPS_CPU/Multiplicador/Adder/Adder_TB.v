@@ -30,7 +30,7 @@ module Adder_TB();
 
 		OperandoA = 16'h8000;
 		OperandoB = 16'h8000;
-		#10;
+		#100;
 
 		$stop;
 	
