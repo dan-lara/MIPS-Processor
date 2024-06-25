@@ -3,8 +3,8 @@
 module ACC_TB();
 
 	reg Load, Sh, Ad, Clk;
-	reg [8:0] Entradas; 
-	wire [8:0] Saidas;		
+	reg [32:0] Entradas; 
+	wire [32:0] Saidas;		
 
 	ACC DUT(
 		.Load(Load),
