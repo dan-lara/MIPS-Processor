@@ -1,7 +1,7 @@
 module instructionmemory #(
 //---------Sizes-----------------
 	parameter data_WIDTH = 32,//Words de 32 bits
-	parameter ADDR_WIDTH = 10//2^10 = 1024 Enderecos
+	parameter ADDR_WIDTH = 10
 )
 (
 //---------Input-----------------
