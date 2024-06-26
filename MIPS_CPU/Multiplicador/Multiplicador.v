@@ -1,7 +1,7 @@
 module Multiplicador(
 	input [15:0] Multiplicando,
 	input [15:0] Multiplicador,
-	input St, Clk,
+	input St, Clk, Reset,
 	
 	output Idle, Done,
 	output [31:0] Produto
@@ -21,12 +21,13 @@ module Multiplicador(
 		.Clk(Clk), 
 		.K(K)
 	);
-	//module CONTROL (input Clk, K, St, M,	output Idle, Done, Load, Sh, Ad);
+	//module CONTROL (input Clk, K, St, M, Reset, output Idle, Done, Load, Sh, Ad);
 	CONTROL CONTROL (
 		.Clk(Clk), 
 		.K(K), 
 		.St(St), 
-		.M(Produto[0]), 
+		.M(Produto[0]),
+		.Reset(Reset),
 		.Idle(Idle), 
 		.Done(Done), 
 		.Load(Load), 

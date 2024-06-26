@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 module CONTROL_TB();
-	reg Clk, K, St, M;
+	reg Clk, K, St, M, Reset;
 	wire Idle, Done, Load, Sh, Ad;
 	
 	reg [1:0] state;
@@ -10,6 +10,7 @@ module CONTROL_TB();
 	  .K(K),
 	  .St(St),
 	  .M(M),
+	  .Reset(Reset),
 	  .Idle(Idle),
 	  .Done(Done),
 	  .Load(Load),
@@ -18,25 +19,48 @@ module CONTROL_TB();
 	);   
 
 	initial begin
-	  Clk = 0;
-	  St = 0;
-	  K = 0;
-	  M = 0;
-	  #10 ;
-	  
-	  #10 St = 1;
-	  
-	  #10 St = 0;
-	  M = 1;
-	  #10 M = 0;
-	  
-	  #20 K = 1; M = 0;
-	  #10 K = 0; St = 0;
-	  #25 $stop;
+		Clk = 0;
+		Reset = 1;
+		St = 0;
+		K = 0;
+		M = 0;
+		
+		#20 Reset = 0;
+		St = 0;
+		K = 0;
+		M = 0;
+	
+		#20 St = 1;
+		K = 0;
+		M = 0;
+	
+		#20 St = 0;
+		K = 0;
+		M = 1;
+		
+		#20 St = 0;
+		K = 0;
+		M = 1;
+		
+		#20 St = 0;
+		K = 0;
+		M = 0;
+		
+		#20 St = 0;
+		K = 0;
+		M = 1;
+		
+		#20 St = 0;
+		K = 1;
+		M = 0;
+	
+		#40 St = 1;
+		K = 0;
+		M = 0;
 	end
 
-	initial #1000 $stop;
+	initial #240 $stop;
 
-	always #5 Clk = ~Clk;
+	always #10 Clk = ~Clk;
 	initial $init_signal_spy("DUT/CONTROL/state", "state", 1);
 endmodule

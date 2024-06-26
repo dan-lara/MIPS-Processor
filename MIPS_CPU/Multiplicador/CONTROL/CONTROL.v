@@ -1,12 +1,15 @@
 module CONTROL (
-	input Clk, K, St, M,
+	input Clk, K, St, M, Reset,
 	output reg Idle, Done, Load, Sh, Ad
 );
 
 	localparam s0 = 2'b00, s1 = 2'b01, s2 = 2'b10, s3 = 2'b11;
 	reg [1:0] state;
 
-	always @(posedge Clk) begin
+	always @(posedge Clk, posedge Reset) begin
+		if(Reset)
+			state <= s0;
+		else
 		case(state) 
 			s0: begin
 				if (St == 0) state <= s0; 
