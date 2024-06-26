@@ -34,11 +34,11 @@ module Multiplicador_TB();
 		#50 Reset = 0;
 		
 		// Todas as possibilidades
-		for(i = 0; i <= 15; i = i + 1) begin
+		for(i = 65530; i <= 65535; i = i + 1) begin
 		
 			Multiplicador = i[15:0];
 			
-			for(j = 0; j <= 15; j = j + 1) begin
+			for(j = 65530; j <= 65535; j = j + 1) begin
 				Multiplicando = j[15:0];
 				St = 1;
 				#80 St = 0;
