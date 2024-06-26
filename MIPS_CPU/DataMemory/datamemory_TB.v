@@ -1,37 +1,54 @@
-`timescale 1ns/10ps
-
+`timescale 1ns/100ps
 module datamemory_TB();
-
-	parameter data_WIDTH = 32;
+	parameter DATA_WIDTH = 32;
 	parameter ADDR_WIDTH = 10;
-	//--------------Input Ports-----------------------
+
+	//	Sinais para simulação
 	reg [ADDR_WIDTH-1:0] address;
 	reg we;
 	reg clk;
-	reg [data_WIDTH-1:0] dataIn;
-	wire [data_WIDTH-1:0] dataOut;
+	reg [DATA_WIDTH-1:0] dataIn;
+	wire [DATA_WIDTH-1:0] dataOut;
 	integer k = 0;
 	
+	// Sinal de clock
+	always #10 clk = ~clk;
+	
+	// Device Under Test
 	datamemory DUT(
-		.ADDR(address),  
-		.WR_RD(we), 
+		.address(address), 
+		.we(we), 
 		.clk(clk),
-		.din(dataIn), 
-		.dout(dataOut)
+		.dataIn(dataIn), 
+		.dataOut(dataOut)
 	);
-
+	
+	
 	initial begin
-		clk=0;
+		
+		clk = 0;
+		we = 1;
+		address = 9'b0;
+		dataIn = 32'b0;
+		
+		for (k=0; k < 10; k = k + 1) 
+		begin
+			#20 address = k;
+		end
+		
 		we = 0;
-		address = 10'd0;
-		#50 address = 10'd1;
-		#50 address = 10'd2;
-		#50 address = 10'd3;
-		#50 $stop;
+		address = 9'b0;
+		dataIn = 32'b0;
+		we = 0;
+		
+		for (k=0; k < 1024; k = k + 1) 
+		begin
+			#20 address = k;
+		end
+		
 	end
 
-	always begin
-		#10 clk = ~clk;
-	end
+	
+	initial #2300 $stop;
 
 endmodule

@@ -1,55 +1,35 @@
-module datamemory #(
-//Sizes//
-	parameter data_WIDTH = 32,//32 bits por word
-	parameter ADDR_WIDTH = 11//2^10 = 1024 endereços
+module datamemory 
+#(
+	parameter DATA_WIDTH = 32,
+	parameter ADDR_WIDTH = 10
 )
-
 (
-//Inputs//
-	input [ADDR_WIDTH-1:0] ADDR,
-	input [data_WIDTH-1:0] din,
-	input WR_RD,
+	input [ADDR_WIDTH-1:0] address,
+	input [DATA_WIDTH-1:0] dataIn,
+	input we,
 	input clk,
-//
-//Outputs
-	output reg [data_WIDTH-1:0] dout
+	output [DATA_WIDTH-1:0] dataOut
 );
 
-//Internal//
-reg [data_WIDTH-1:0] mem [0:(1<<(ADDR_WIDTH-1))-1];
-reg[ADDR_WIDTH-1:0] addfix;
+	reg [DATA_WIDTH-1:0] memoria [0:(1<<ADDR_WIDTH)-1];
 
-always @(*)begin
-	if((ADDR >= 10'h300)&&(ADDR <= 10'h3FF))begin
-		addfix <= (ADDR^(10'h300));
-	end
-	else if((ADDR >= 10'h400)&&(ADDR <= 10'h4FF))begin
-		addfix <= (ADDR^(10'h100));
-	end
-	else if((ADDR >= 10'h500)&&(ADDR <= 10'h5FF))begin
-		addfix <= (ADDR^(10'h300));
-	end
-	else if((ADDR >= 10'h600)&&(ADDR <= 10'h6FF))begin
-		addfix <= (ADDR^(10'h100));
-	end
-	else begin
-		addfix <= ADDR;
-	end
-end
+	reg [ADDR_WIDTH-1:0] reg_address;
 
-initial begin//Valores Iniciais da memoria
-	$readmemb("D:/Downloads/MIPS_CPU_Grupo_1/MIPS_CPU/DataMemory/datamemory.txt", mem);
-end
-
-//Code//
-	always @(posedge clk)begin
-		if(WR_RD)begin//Escrita
-			mem[addfix] <= din;
-		end
-		else begin//Leitura
-			dout <= mem[addfix];
-		end
+	// Alguns valores iniciais para testar o MIPS
+	initial  begin
+		memoria[0] = 2001;
+		memoria[1] = 4001;
+		memoria[2] = 5001;
+		memoria[3] = 3001;
 	end
-//
 
-endmodule	
+	always @(posedge clk) begin
+		if(~we)
+			memoria[address] <= dataIn;  // Escrita
+		
+		reg_address <= address;
+	end
+
+	assign dataOut = memoria[reg_address];
+
+endmodule
