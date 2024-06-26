@@ -1,5 +1,5 @@
 `timescale 1ns/100ps
-module ADDRDecoding_TB();
+module ADDRDecoding_Prog_TB();
 
 	// Sinais para simulação
 	wire CS;
@@ -7,7 +7,7 @@ module ADDRDecoding_TB();
 	integer i;
 	
 	// Device Under Test
-	ADDRDecoding DUT
+	ADDRDecoding_Prog DUT
 	(
 		.CS(CS),
 		.ADDR(ADDR)
