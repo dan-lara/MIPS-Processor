@@ -19,15 +19,17 @@ initial begin
 	address = 10'b0;	
 	#10
 	
-	for (k=0; k < 37; k = k + 1) 
+	for (k=0; k < 30; k = k + 1) 
 	begin
-		#50 address = address + 1;
+		#100 address = k;
 	end
-	#2000 $stop;
+	
 end
 
+initial #4000 $stop;
+
 always begin
-     #10 clk = ~clk;
+     #50 clk = ~clk;
 end
  
 endmodule
