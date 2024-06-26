@@ -5,12 +5,10 @@ module mux (
 );
 
 	always @(*)begin
-		if(SEL)begin
+		if(SEL)
 			Saida <= EntradaA;
-		end
-		else begin
+		else
 			Saida <= EntradaB;
-		end 
 	end
 
 endmodule 
