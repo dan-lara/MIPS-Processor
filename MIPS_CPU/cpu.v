@@ -3,31 +3,27 @@ module cpu
 	input  CLK, RST, 
 	inout  [31:0] Data_BUS_READ,
 	inout  [31:0] Prog_BUS_READ,
-	output [31:0] ADDR, Data_BUS_WRITE, ADDR_Prog
+	output [31:0] ADDR, Data_BUS_WRITE, ADDR_Prog,
 	output CS, WR_RD, CS_P
 );
 
 /* 
 
 	Respostas das perguntas:
-
 	a) Qual a latência do sistema?
 		
-		A latência do sistema é de 5 pulsos de clock, ou seja, cada instrução precisa
-		de 5 pulsos de clock para ser executada, uma vez que a arquitetura MIPS possui 
-		5 estágios de pipeline.
+		A latência do sistema é de 5 ciclos de clock, pois a arquitetura MIPS tem 5 estágios no pipeline.
 
 		
 	b) Qual o throughput do sistema?
 			
-		O Throughput do sistema é de 1 instrução por ciclo de clock, ou seja, uma vez que
-		o pipeline está cheio, cada instrução termina de ser executada em um pulso de clock.
+		O throughput do sistema é de 1 instrução por ciclo de clock. Isso significa que, quando o pipeline está cheio, cada instrução é concluída a cada ciclo de clock.
 
 	
 	c) Qual a máxima frequência operacional entregue pelo Time Quest Timing 
 		Analizer para o multiplicador e para o sistema? (Indique a FPGA utilizada)
 		
-		FPGA utilizada: Cyclone IV GX - EP4CGX150DFF31I7AD (última)		
+		FPGA utilizada: Cyclone IV GX - EP4CGX150DF31I7AD (última)		
 		Foi utilizado a opção "Slow 1200mV 100C Model" para realizar análises (pior cenário).
 		Frequência máxima operacional para o Multiplicador: 314,47 MHz
 		Frequência máxima operacional para o Sistema (sem o multiplicador): 67,09 MHz
@@ -104,59 +100,61 @@ module cpu
  
 	(*keep=1*) wire CLK_SYS, CLK_MUL;
 	(*keep=1*) wire [31:0] writeBack;
-	wire [11:0] fio_Address;
+	//wire [11:0] fio_Address;
 	wire [31:0] fio_produto_saida, fio_A, fio_B, fio_instruction, fio_D_saida,
 	fio_M_entrada, fio_reg_cs, fio_memoria, fio_D_entrada, fio_Alu, fio_mux_alu_entrada, fio_imm,
 	fio_ctrl1, fio_ctrl2, fio_ctrl3, fio_ctrl4, fio_offset_ext, addressCorrigido, addressCorrigidoInst,
-	fio_mux_DataMemory, fio_saida_mux_inst;
+	fio_mux_DataMemory;
+	wire [23:0] fio_saida_mux_inst;
 	
 	assign addressCorrigido = ADDR - 32'hD40; // Correção do endereço que chega no DataMemory
-	assign addressCorrigidoInst = ADDR - 32'h940; // Correção do endereço que chega no InstructionMemory
+	assign addressCorrigidoInst = ADDR_Prog - 32'h940; // Correção do endereço que chega no InstructionMemory
 	
 	
 	// Descrição estrutural do MIPS:
 	
 	// PLL (Divisão do clock)
 	// O CLK_MUL deve ser 34 vezes mais rápido do que o CLK_SYS.
-	PLL PLL
-	( 
-		.areset(RST),
-		.inclk0(CLK),
-		.c0(CLK_MUL), // CLK / 1
-		.c1(CLK_SYS)  // CLK / 34
-	);
+//	PLL PLL
+//	( 
+//		.areset(RST),
+//		.inclk0(CLK),
+//		.c0(CLK_MUL), // CLK / 1
+//		.c1(CLK_SYS)  // CLK / 34
+//	);
 
 	// Primeiro estagio - (Instruction Fetch)
-	instructionmemory ProgramMemory //OK
+	instructionmemory ProgramMemory
 	(
-		.address(addressCorrigidoInst),
+		.address(addressCorrigidoInst[9:0]),
 		.clk(CLK_SYS),
 		.dataOut(fio_instruction)
 	);
-	assign ADDR_Prog = fio_Address;
-	pc PC  //OK
+	assign CLK_SYS = CLK;
+	//assign ADDR_Prog = fio_Address;
+	pc PC   
 	(
 		.reset(RST),
 		.clk(CLK_SYS),
-		.Address(fio_Address)
+		.Address(ADDR_Prog)
 	);
 	
-	ADDRDecoding_Prog ADDRDecoding_Prog //OK
+	ADDRDecoding_Prog ADDRDecoding_Prog  
 	(
-		.ADDR(fio_Address),
+		.ADDR(ADDR_Prog),
 		.CS(CS_P)
 	);
 	
 	mux MUX_SAIDA_Instruction 
 	(
-		.EntradaA(fio_instruction),
-		.EntradaB(Prog_BUS_READ),
+		.EntradaA(Prog_BUS_READ),
+		.EntradaB(fio_instruction),
 		.SEL(CS_P),
 		.Saida(fio_saida_mux_inst)
 	);
 
-	// Segundo estagio - (Instruction Decode) //OK
-	registerfile RegisterFile //OK
+	// Segundo estagio - (Instruction Decode)  
+	registerfile RegisterFile  
 	(
 		.din(writeBack),
 		.writeEnable(fio_ctrl4[23]),
@@ -169,20 +167,20 @@ module cpu
 		.regB(fio_B)
 	);	
 
-	control Control //OK
+	control Control  
 	(
 		.instrucao(fio_saida_mux_inst),  
 		.controle(fio_ctrl1)
 	);
 
-	extend Extend //OK
+	extend Extend  
 	(
 		.Entrada(fio_saida_mux_inst[15:0]),
 		.Saida(fio_offset_ext),
 		.Enable(fio_ctrl1[20])
 	);
 
-	Register IMM //OK
+	Register IMM  
 	(
 		.rst(RST), 
 		.clk(CLK_SYS),
@@ -190,7 +188,7 @@ module cpu
 		.Saida(fio_imm)	
 	);
 
-	Register CRTL1 //OK
+	Register CRTL1  
 	(
 		.rst(RST),
 		.clk(CLK_SYS),
@@ -198,8 +196,8 @@ module cpu
 		.Saida(fio_ctrl2)	
 	);
 
-	// Terceiro estagio - Execute //OK
-	mux MUX_ALU_Entrada //OK
+	// Terceiro estagio - Execute  
+	mux MUX_ALU_Entrada  
 	(
 		.EntradaA(fio_imm),
 		.EntradaB(fio_B),
@@ -207,7 +205,7 @@ module cpu
 		.Saida(fio_mux_alu_entrada)
 	);
 
-	Register CRTL2 //OK
+	Register CRTL2  
 	(
 		.rst(RST),
 		.clk(CLK_SYS),
@@ -215,7 +213,7 @@ module cpu
 		.Saida(fio_ctrl3)	
 	);
 
-	alu ALU //OK
+	alu ALU  
 	(
 		.EntradaA(fio_A),
 		.EntradaB(fio_mux_alu_entrada),
@@ -223,25 +221,25 @@ module cpu
 		.Saida(fio_Alu)
 	);
 
-	mux MUX_ALU_Saida //OK
+	mux MUX_ALU_Saida  
 	(
 		.EntradaA(fio_Alu),
 		.EntradaB(fio_produto_saida),
 		.SEL(fio_ctrl2[18]),
 		.Saida(fio_D_entrada)
 	);
-	
-	Multiplicador MULT //OK
-	(
-		.St(fio_ctrl2[15]), 
-		.Clk(CLK_MUL), 
-		.Reset(RST),
-		.Produto(fio_produto_saida),
-		.Multiplicador(fio_A),
-		.Multiplicando(fio_B)
-	);
+	assign fio_produto_saida = 32'b0;
+//	Multiplicador MULT  
+//	(
+//		.St(fio_ctrl2[15]), 
+//		.Clk(CLK_MUL), 
+//		.Reset(RST),
+//		.Produto(fio_produto_saida),
+//		.Multiplicador(fio_A),
+//		.Multiplicando(fio_B)
+//	);
 
-	Register D //OK
+	Register D  
 	(
 		.rst(RST),
 		.clk(CLK_SYS),
@@ -249,7 +247,7 @@ module cpu
 		.Saida(ADDR)	
 	);
 
-	Register Reg_B2 //OK
+	Register Reg_B2  
 	(
 		.rst(RST),
 		.clk(CLK_SYS),
@@ -257,10 +255,10 @@ module cpu
 		.Saida(Data_BUS_WRITE)	
 	);
 
-	// Quarto estagio - (Memory) //OK
+	// Quarto estagio - (Memory)  
 	assign WR_RD = fio_ctrl3[16]; 
 		
-	datamemory DataMemory //OK
+	datamemory DataMemory  
 	(
 		.address(addressCorrigido[9:0]),
 		.dataIn(Data_BUS_WRITE),
@@ -269,7 +267,7 @@ module cpu
 		.dataOut(fio_memoria)
 	);
 
-	mux Saida_DataMemory //OK
+	mux Saida_DataMemory
 	(
 		.EntradaA(fio_memoria),
 		.EntradaB(Data_BUS_READ),
@@ -278,13 +276,13 @@ module cpu
 	);
 
 
-	ADDRDecoding ADDRDecoding //OK
+	ADDRDecoding ADDRDecoding
 	(
 		.ADDR(ADDR),
 		.CS(CS)
 	);
 
-	Register Reg_CS //OK
+	Register Reg_CS
 	(
 		.rst(RST),
 		.clk(CLK_SYS),
@@ -292,7 +290,7 @@ module cpu
 		.Saida(fio_reg_cs)	
 	);
 
-	Register D2 //OK
+	Register D2
 	(
 		.rst(RST),
 		.clk(CLK_SYS),
@@ -300,7 +298,7 @@ module cpu
 		.Saida(fio_D_saida)	
 	);
 
-	Register CRTL3 //OK
+	Register CRTL3
 	(
 		.rst(RST),
 		.clk(CLK_SYS),
@@ -308,8 +306,8 @@ module cpu
 		.Saida(fio_ctrl4)	
 	);
 
-	// Quinto estagio - (Write Back) //OK
-	mux MUX_WB //OK
+	// Quinto estagio - (Write Back)
+	mux MUX_WB
 	(
 		.EntradaA(fio_mux_DataMemory),
 		.EntradaB(fio_D_saida),

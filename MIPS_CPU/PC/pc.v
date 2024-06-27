@@ -1,13 +1,13 @@
 module pc (
 	input reset, clk,
-	output reg [11:0] Address
+	output reg [31:0] Address
 );
 	
 	always @(posedge clk or posedge reset)begin 
 		if(reset)
-			Address <= 12'b1001_0100_0000; //Reseta para o endereço Grupo 4 * 0x250 = 0x940
+			Address <= 32'b1001_0100_0000; //Reseta para o endereço Grupo 4 * 0x250 = 0x940
 		else
-			Address <= Address + 12'b1; //Contagem Incremental
+			Address <= Address + 32'b1; //Contagem Incremental
 	end	
 endmodule
 

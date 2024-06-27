@@ -15,10 +15,13 @@ module TB();
 		.CLK(CLK),
 		.RST(RST),
 		.Data_BUS_READ(Data_BUS_READ),
+		.Prog_BUS_READ(Prog_BUS_READ),
 		.ADDR(ADDR), 
 		.Data_BUS_WRITE(Data_BUS_WRITE),
+		.ADDR_Prog(ADDR_Prog),
 		.CS(CS),
-		.WR_RD(WR_RD)
+		.WR_RD(WR_RD),
+		.CS_P(CS_P)
 	);
 	
 	// Sinal de clock
@@ -32,7 +35,7 @@ module TB();
 	initial begin
 		$init_signal_spy("DUT/CLK_SYS","CLK_SYS",1);
 		$init_signal_spy("DUT/CLK_MUL","CLK_MUL",1);
-		$init_signal_spy("DUT/WriteBack","writeBack",1);		
+		$init_signal_spy("DUT/writeBack","writeBack",1);		
 		
 		CLK = 0;
 		RST = 1;
