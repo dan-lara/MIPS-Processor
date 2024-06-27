@@ -6,7 +6,7 @@ module Register(//Registro Simples de 32bits
 	
 	always @(posedge clk or posedge rst)begin
 		if(rst)
-			Saida <= 32'd0;
+			Saida <= 0;
 		else
 			Saida <= Entrada;
 	end

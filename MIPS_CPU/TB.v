@@ -12,7 +12,7 @@ module TB();
 	
 	cpu DUT 
 	(
-		.CLK(CLK),
+		.CLK_SYS(CLK),
 		.RST(RST),
 		.Data_BUS_READ(Data_BUS_READ),
 		.Prog_BUS_READ(Prog_BUS_READ),

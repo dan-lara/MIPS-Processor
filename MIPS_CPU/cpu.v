@@ -1,12 +1,3 @@
-module cpu 
-(
-	input  CLK, RST, 
-	inout  [31:0] Data_BUS_READ,
-	inout  [31:0] Prog_BUS_READ,
-	output [31:0] ADDR, Data_BUS_WRITE, ADDR_Prog,
-	output CS, WR_RD, CS_P
-);
-
 /* 
 
 	Respostas das perguntas:
@@ -23,13 +14,11 @@ module cpu
 	c) Qual a máxima frequência operacional entregue pelo Time Quest Timing 
 		Analizer para o multiplicador e para o sistema? (Indique a FPGA utilizada)
 		
-		FPGA utilizada: Cyclone IV GX - EP4CGX150DF31I7AD (última)		
-		Foi utilizado a opção "Slow 1200mV 100C Model" para realizar análises (pior cenário).
-		Frequência máxima operacional para o Multiplicador: 314,47 MHz
-		Frequência máxima operacional para o Sistema (sem o multiplicador): 67,09 MHz
 		
-		Observação: As análises pelo Time Quest Timing Analizer foram realizadas
-		em projetos separados, como recomendado pelo FAQ.
+		A FPGA utilizada foi a Cyclone IV GX - EP4CGX150DFF31I7AD.
+		Para as análises de pior cenário, utilizou-se a opção "Slow 1200mV 100C Model".
+		A frequência máxima operacional para o multiplicador é de 314,07 MHz, 
+		enquanto a frequência máxima operacional para o sistema (sem o multiplicador) é de ??.
 		
 	d) Qual a máxima frequência de operação do sistema? (Indique a FPGA utilizada)
 		
@@ -41,71 +30,75 @@ module cpu
 		produto. Essa quantidade de pulsos de clock é dado por 2N+2, no qual N é o número de bits 
 		dos operandos do multiplicador, assim 2*16+2 = 34 pulsos de clock. Portanto:
 
-		Frequência máxima de operação do sistema = 314,47 MHz / 34 = 9,24 MHz
+		Frequência máxima de operação do sistema = 314,07 MHz / 34 = 9,237 MHz
 
 		
 	e) Com a arquitetura implementada, a expressão (A*B) – (C+D) é executada corretamente 
 		(se executada em sequência ininterrupta)? Por quê? O que pode ser feito para que a 
 		expressão seja calculada corretamente?
 	
-		A expressão NÃO será executada corretamente se executada em sequência de forma ininterrupta. 
-		Isso ocorre porque no momento da execução das instruções matemáticas, os operandos não estarão 
-		disponíveis no RegisterFile devido a arquitetura do MIPS, provocando os chamados Pipelines Hazzards. 
-		Uma solução para resolver esse problema é utilizar instruções sem impacto no algoritmo (Bolhas) antes 
-		de instruções em que podem ocorrer Pipelines Hazzards, dessa forma é possível atrasar a instrução, para 
-		que os operandos sejam armazenados e estejam disponíveis no RegisterFile a tempo, assim evitando a ocorrência 
-		deste problema. Outra solução é implementar no módulo "Controle" uma máquina de estados que conseguiria 
-		prever e resolver os Pipelines Hazzards, entretanto isso aumentaria a complexidade, a área e a potência do circuito.
+		A expressão não será executada corretamente se for executada de forma contínua. Isso ocorre porque, durante a execução das instruções matemáticas,
+		os operandos não estarão disponíveis no RegisterFile devido à arquitetura MIPS, causando os chamados Pipeline Hazards. 
+		Uma solução para esse problema é inserir instruções sem impacto no algoritmo (bolhas) antes das instruções onde podem ocorrer Pipeline Hazards. 
+		Dessa forma, é possível atrasar a instrução para que os operandos sejam armazenados e estejam disponíveis no RegisterFile a tempo, evitando o problema. 
+		Outra solução é implementar uma máquina de estados no módulo de controle que possa prever e resolver os Pipeline Hazards, 
+		mas isso aumentaria a complexidade, a área e o consumo de energia do circuito.
 						
 				
 	 f) Analisando a sua implementação de dois domínios de clock diferentes, haverá 
 		 problemas com metaestabilidade? Por que?
  	
-		 Apesar da utilização de dois domínios de clock diferentes, o sistema não haverá problemas com metaestabilidade, 
-		 uma vez que os pulsos de clock necessários para realizar a multiplicação se encaixam dentro de um período de clock 
-		 do sistema MIPS, além de ambos clocks não estarem defasados entre si, ou seja, possuem zero graus de defasagem, 
-		 algo que é garantido devido a utilização da PLL. É importante ressaltar que o Time Quest Timing Analyzer foi 
-		 utilizado para resolver a questão da metaestabilidade para o MIPS e para o multiplicador separadamente.
+		 Apesar da utilização de dois domínios de clock diferentes, o sistema não terá problemas com metaestabilidade, desde que o controle de fase entre os dois domínios seja bem gerenciado. 
+		 É essencial entender a relação entre ambos os clocks. Sendo determinístico, as análises temporais podem ser feitas de modo que sejam atendidas para ambos os domínios de clock. 
+		 O Time Quest Timing Analyzer foi utilizado para resolver a questão da metaestabilidade tanto para o MIPS quanto para o multiplicador separadamente, garantindo que as restrições temporais sejam cumpridas.
+		 Essa abordagem garante que os problemas de metaestabilidade sejam evitados, considerando que a análise determinística e as restrições temporais são adequadamente gerenciadas para ambos os domínios de clock.
 	
 	
 	 g) A aplicação de um multiplicador do tipo utilizado, no sistema MIPS sugerido, 
 		 é eficiente em termos de velocidade? Por que?
 	
-		 A aplicação desse multiplicador desloca e soma no sistema MIPS não é eficiente em termos de velocidade. O motivo disso 
-		 é pelo fato do multiplicador possuir uma latência muito alta, de 34 pulsos de clock para realizar uma multiplicação, isso 
-		 tem como consequência uma redução brusca na máxima frequência do sistema MIPS. Isso pode ser visto pelas informações 
-		 obtidas anteriormente, a frequência máxima de operação do sistema de 67,09 MHz caiu para 9,24 MHz ao aplicar o multiplicador.
+		A aplicação de um multiplicador de deslocamento e soma no sistema MIPS não é eficiente 
+		em termos de velocidade. Isso se deve à alta latência do multiplicador, que necessita de 34 ciclos de clock 
+		para realizar uma multiplicação, resultando em uma redução significativa na frequência máxima do sistema MIPS. 
+		Conforme informações anteriores, a frequência máxima de operação do sistema, 
+		que era de ?? MHz, caiu para 9,237 MHz ao incluir o multiplicador.
 
 		 
 	 h) Cite modificações cabíveis na arquitetura do sistema que tornaria o sistema 
 		 mais rápido (frequência de operação maior). Para cada modificação sugerida, qual 
 	    a nova latência e throughput do sistema?
 	 
-		Sabemos que o multiplicador utilizado no sistema possui uma latência alta e necessita de 34 pulsos de clock para finalizar 
-		uma multiplicação, isso tem como consequência uma redução na máxima frequência de operação do sistema (MIPS + multiplicador). 
-		Uma modificação cabível seria segmentar o terceiro estágio de pipeline (Execute) em 34 subestágios, fazendo com que a arquitetura 
-		do sistema possua 38 estágios de pipeline no total. Essa modificação não afetaria o Throughput do sistema e aumentaria a máxima 
-		frequência de operação, visto que não seria necessário dividir o clock do sistema por 34 como anteriormente, utilizando assim um 
-		único clock com frequência de operação maior. Para a modificação sugerida, como já citado, o Throughput será mantido em uma instrução 
-		por clock, entretanto, a latência sofreria um acréscimo para 38 pulsos de clock, o que demandaria uma maior complexidade do circuito 
-		e consequentemente um custo mais elevado. É importante ressaltar também que para realizar essa modificação seria necessário alterar 
-		a arquitetura de pipeline enrolado do multiplicador para pipeline desenrolado.
+		Sabemos que o multiplicador utilizado no sistema possui uma latência alta e necessita de 34 pulsos de clock para finalizar uma multiplicação, 
+		o que reduz a máxima frequência de operação do sistema (MIPS + multiplicador). Uma modificação viável seria segmentar o terceiro estágio do pipeline (Execute) 
+		em 34 subestágios, aumentando o total de estágios do pipeline do sistema para 38. Essa modificação não afetaria o throughput do sistema e permitiria aumentar a 
+		máxima frequência de operação, pois não seria necessário dividir o clock do sistema por 34, utilizando assim um único clock com frequência de operação maior. 
+		Com essa modificação, o throughput continuaria sendo de uma instrução por ciclo de clock, mas a latência aumentaria para 38 ciclos de clock, 
+		o que exigiria uma maior complexidade no circuito e, consequentemente, um custo mais elevado. 
+		Além disso, essa modificação exigiria a mudança da arquitetura de pipeline enrolado do multiplicador para pipeline desenrolado.
 
-		Outra modificação possível, seria substituir o multiplicador que está sendo utilizado por um outro com latência menor e 
-		maior frequência máxima de operação, assim ainda que necessário a utilização de dois clocks, a frequência de operação máxima 
-		do sistema seria proporcionalmente maior. O Throughput permaneceria como 1 instrução de clock e a latência do MIPS permaneceria 
-		em 5 pulsos de clock.
+		Outra possível modificação seria substituir o multiplicador atual por um com menor latência e maior frequência máxima de operação. 
+		Mesmo que ainda fosse necessário utilizar dois clocks, a frequência 
+		máxima de operação do sistema seria proporcionalmente maior. 
+		O throughput continuaria sendo de uma instrução por ciclo de clock, 
+		e a latência do MIPS permaneceria em 5 ciclos de clock.
 
 */
+module cpu 
+(
+	input  CLK_SYS, RST, 
+	inout  [31:0] Data_BUS_READ,
+	inout  [31:0] Prog_BUS_READ,
+	output [31:0] ADDR, Data_BUS_WRITE, ADDR_Prog,
+	output CS, WR_RD, CS_P
+);
  
-	(*keep=1*) wire CLK_SYS, CLK_MUL;
+	//(*keep=1*) wire CLK_SYS, CLK_MUL;
 	(*keep=1*) wire [31:0] writeBack;
-	//wire [11:0] fio_Address;
+	wire [31:0] fio_Address;
 	wire [31:0] fio_produto_saida, fio_A, fio_B, fio_instruction, fio_D_saida,
 	fio_M_entrada, fio_reg_cs, fio_memoria, fio_D_entrada, fio_Alu, fio_mux_alu_entrada, fio_imm,
 	fio_ctrl1, fio_ctrl2, fio_ctrl3, fio_ctrl4, fio_offset_ext, addressCorrigido, addressCorrigidoInst,
-	fio_mux_DataMemory;
-	wire [23:0] fio_saida_mux_inst;
+	fio_mux_DataMemory, fio_saida_mux_inst;
 	
 	assign addressCorrigido = ADDR - 32'hD40; // Correção do endereço que chega no DataMemory
 	assign addressCorrigidoInst = ADDR_Prog - 32'h940; // Correção do endereço que chega no InstructionMemory
@@ -126,22 +119,23 @@ module cpu
 	// Primeiro estagio - (Instruction Fetch)
 	instructionmemory ProgramMemory
 	(
-		.address(addressCorrigidoInst[9:0]),
+		.address(addressCorrigidoInst),
 		.clk(CLK_SYS),
 		.dataOut(fio_instruction)
 	);
-	assign CLK_SYS = CLK;
-	//assign ADDR_Prog = fio_Address;
+	//assign CLK_SYS = CLK;
+	assign ADDR_Prog = fio_Address;
+	
 	pc PC   
 	(
 		.reset(RST),
 		.clk(CLK_SYS),
-		.Address(ADDR_Prog)
+		.Address(fio_Address)
 	);
 	
 	ADDRDecoding_Prog ADDRDecoding_Prog  
 	(
-		.ADDR(ADDR_Prog),
+		.ADDR(fio_Address),
 		.CS(CS_P)
 	);
 	
@@ -228,16 +222,16 @@ module cpu
 		.SEL(fio_ctrl2[18]),
 		.Saida(fio_D_entrada)
 	);
-	assign fio_produto_saida = 32'b0;
-//	Multiplicador MULT  
-//	(
-//		.St(fio_ctrl2[15]), 
-//		.Clk(CLK_MUL), 
-//		.Reset(RST),
-//		.Produto(fio_produto_saida),
-//		.Multiplicador(fio_A),
-//		.Multiplicando(fio_B)
-//	);
+	//assign fio_produto_saida = 32'b0;
+	Multiplicador MULT  
+	(
+		.St(fio_ctrl2[15]), 
+		.Clk(CLK_MUL), 
+		.Reset(RST),
+		.Produto(fio_produto_saida),
+		.Multiplicador(fio_A),
+		.Multiplicando(fio_B)
+	);
 
 	Register D  
 	(
