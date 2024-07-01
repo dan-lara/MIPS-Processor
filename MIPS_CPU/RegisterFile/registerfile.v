@@ -9,9 +9,9 @@ module registerfile (
 );
 //--------Internal-----------------
 	integer k;
-	reg [31:0] register [31:0]; //32 Registradores de 32 bits cada
+	reg [31:0] register [0:31]; //32 Registradores de 32 bits cada
 	
-	always @ (negedge clk, posedge rst) begin
+	always @ (posedge clk, posedge rst) begin
 		k = 0;
 		if(rst)
 			for(k=0; k<32; k=k+1)

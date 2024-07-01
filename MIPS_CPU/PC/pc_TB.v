@@ -3,7 +3,7 @@
 module pc_TB();
 
 	reg reset, clk;
-	wire [11:0] Address;
+	wire [31:0] Address;
 	
 	pc DUT(		
 		.reset(reset),

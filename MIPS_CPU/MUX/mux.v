@@ -4,11 +4,10 @@ module mux (
 	output reg [31:0] Saida
 );
 
-	always @(*)begin
+	always @(EntradaA, EntradaB, SEL) begin
 		if(SEL)
 			Saida <= EntradaA;
 		else
 			Saida <= EntradaB;
 	end
-
 endmodule 

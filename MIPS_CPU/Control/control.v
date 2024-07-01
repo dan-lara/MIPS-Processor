@@ -35,7 +35,7 @@ module control
 		RW = 0;
 		
 		// Instruções de formato i
-		if(instrucao[31:26] == 6'b000101) begin // (grupo + 1) = 4 + 1 = 5 - LW 	
+		if(instrucao[31:26] == 6'b000101) begin // (grupo + 1) = 4 + 1 = 5 - Load in register
 			MULT_Enable = 0;
 			RW = 1;            
 			Operacao = 0;           		
@@ -47,7 +47,7 @@ module control
 			rd = rt; 											
 		end
 	
-		if(instrucao[31:26] == 6'b000110) begin // (grupo + 2) = 4 + 2 = 6 - SW
+		if(instrucao[31:26] == 6'b000110) begin // (grupo + 2) = 4 + 2 = 6 - Store in memory
 			RW = 0;            
 			Operacao = 0;           		
 			Offset_Enable = 1; 

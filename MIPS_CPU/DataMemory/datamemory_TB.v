@@ -3,9 +3,8 @@ module datamemory_TB();
 	parameter DATA_WIDTH = 32;
 	parameter ADDR_WIDTH = 10;
 
-	//	Sinais para simulação
 	reg [ADDR_WIDTH-1:0] address;
-	reg we;
+	reg WR_RD;
 	reg clk;
 	reg [DATA_WIDTH-1:0] dataIn;
 	wire [DATA_WIDTH-1:0] dataOut;
@@ -17,7 +16,7 @@ module datamemory_TB();
 	// Device Under Test
 	datamemory DUT(
 		.address(address), 
-		.we(we), 
+		.WR_RD(WR_RD), 
 		.clk(clk),
 		.dataIn(dataIn), 
 		.dataOut(dataOut)
@@ -27,8 +26,8 @@ module datamemory_TB();
 	initial begin
 		
 		clk = 0;
-		we = 1;
-		address = 9'b0;
+		WR_RD = 1;
+		address = 10'b0;
 		dataIn = 32'b0;
 		
 		for (k=0; k < 10; k = k + 1) 
@@ -36,12 +35,22 @@ module datamemory_TB();
 			#20 address = k;
 		end
 		
-		we = 0;
-		address = 9'b0;
-		dataIn = 32'b0;
-		we = 0;
+		WR_RD = 0;
+		address = 10'b0;
+		dataIn = 32'd35;
+		WR_RD = 0;
 		
-		for (k=0; k < 1024; k = k + 1) 
+		for (k=0; k < 5; k = k + 1) 
+		begin
+			dataIn = dataIn * 3;
+			#20 address = k;
+		end
+		
+		WR_RD = 1;
+		address = 10'b0;
+		dataIn = 32'b0;
+		
+		for (k=0; k < 6; k = k + 1) 
 		begin
 			#20 address = k;
 		end

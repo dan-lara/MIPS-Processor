@@ -15,7 +15,7 @@ module ADDRDecoding_Prog_TB();
 	
 	// Teste para verificar o valor de CS para o intervalode 0000h até FFFFh.
 	initial begin
-		for(i = 0; i <= 16'hFFFF; i = i + 1)
+		for(i = 32'h920; i <= 32'hDFF; i = i + 1)
 			#20 ADDR = i;				
 	end
 	

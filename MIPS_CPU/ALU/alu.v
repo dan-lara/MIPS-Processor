@@ -6,11 +6,10 @@ module alu (
 
 	always @(*)begin
 		case(OP)
-			0: Saida <= EntradaA + EntradaB;
-			1: Saida <= EntradaA - EntradaB;
-			2: Saida <= EntradaA & EntradaB;
-			3: Saida <= EntradaA | EntradaB;
+			2'b00: Saida <= EntradaA + EntradaB;
+			2'b01: Saida <= EntradaA - EntradaB;
+			2'b10: Saida <= EntradaA & EntradaB;
+			2'b11: Saida <= EntradaA | EntradaB;
 		endcase
 	end
-
 endmodule	

@@ -50,5 +50,4 @@ module Multiplicador(
 		.Saidas(out)
 	);
 	
-	
 endmodule

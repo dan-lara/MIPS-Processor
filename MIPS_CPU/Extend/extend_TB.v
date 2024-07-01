@@ -17,8 +17,7 @@ module extend_TB ();
 		Entrada = 16'b1000000000000000;
 		#50 Entrada = 16'b0111111111111111;
 		#50 Enable = 0;
-		Entrada = 16'b1000000000000000;
+		Entrada = 16'b1011000000000000;
 		#50 $stop;
-	end
-	
+	end	
 endmodule

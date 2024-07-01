@@ -6,7 +6,7 @@ module datamemory
 (
 	input [ADDR_WIDTH-1:0] address,
 	input [DATA_WIDTH-1:0] dataIn,
-	input we,
+	input WR_RD,
 	input clk,
 	output [DATA_WIDTH-1:0] dataOut
 );
@@ -15,17 +15,17 @@ module datamemory
 
 	reg [ADDR_WIDTH-1:0] reg_address;
 
-	// Alguns valores iniciais para testar o MIPS
+	
 	initial  begin
-		memoria[0] = 2001;
-		memoria[1] = 4001;
-		memoria[2] = 5001;
-		memoria[3] = 3001;
+		memoria[0] = 32'd2001;
+		memoria[1] = 32'd4001;
+		memoria[2] = 32'd5001;
+		memoria[3] = 32'd3001;
 	end
 
 	always @(posedge clk) begin
-		if(~we)
-			memoria[address] <= dataIn;  // Escrita
+		if(~WR_RD)
+			memoria[address] <= dataIn;
 		
 		reg_address <= address;
 	end
