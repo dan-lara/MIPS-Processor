@@ -1,3 +1,86 @@
+/* 
+	a) Qual a latência do sistema?
+		
+		A latência do sistema é de 5 ciclos de clock, pois a arquitetura MIPS tem 5 estágios no pipeline.
+
+		
+	b) Qual o throughput do sistema?
+			
+		O throughput do sistema é de 1 instrução por ciclo de clock. Isso significa que, quando o pipeline está cheio, cada instrução é concluída a cada ciclo de clock.
+	
+	
+	c) Qual a máxima frequência operacional entregue pelo Time Quest Timing 
+		Analizer para o multiplicador e para o sistema? (Indique a FPGA utilizada)
+		
+		A FPGA utilizada foi a Cyclone IV GX - EP4CGX150DF31I7AD.
+		Utilizou-se a opção "Slow 1200mV 100C Model".
+		A frequência máxima operacional para o multiplicador é de 314,07 MHz, 
+		A frequência máxima operacional para o sistema (sem o multiplicador) é de 72.51 MHz.
+		
+		
+	d) Qual a máxima frequência de operação do sistema? (Indique a FPGA utilizada)
+		
+		FPGA utilizada: Cyclone IV GX - EP4CGX150DF31I7AD
+			
+		A máxima frequência de operação do sistema MIPS total (com multiplicador) é dada pela 
+		máxima frequência reportada pelo TimeQuest para o multiplicador dividido pela quantidade 
+		de pulsos de clock necessários para que o multiplicador processe os operandos e entregue o 
+		produto. Essa quantidade de pulsos de clock é dado por 2N+2, no qual N é o número de bits 
+		dos operandos do multiplicador, assim 2*16+2 = 34 pulsos de clock. Portanto:
+
+		Frequência máxima de operação do sistema = 314,07 MHz / 34 = 9,237 MHz
+		
+		
+	e) Com a arquitetura implementada, a expressão (A*B) – (C+D) é executada corretamente 
+		(se executada em sequência ininterrupta)? Por quê? O que pode ser feito para que a 
+		expressão seja calculada corretamente?
+	
+		A expressão não será executada corretamente se for executada de forma contínua. Isso ocorre porque, durante a execução das instruções matemáticas,
+		os operandos não estarão disponíveis no RegisterFile devido à arquitetura MIPS, causando os chamados Pipeline Hazards. 
+		Uma solução para esse problema é inserir instruções sem impacto no algoritmo (bolhas) antes das instruções onde podem ocorrer Pipeline Hazards. 
+		Dessa forma, é possível atrasar a instrução para que os operandos sejam armazenados e estejam disponíveis no RegisterFile a tempo, evitando o problema. 
+						
+				
+	 f) Analisando a sua implementação de dois domínios de clock diferentes, haverá 
+		 problemas com metaestabilidade? Por que?
+ 	
+		 Apesar da utilização de dois domínios de clock diferentes, o sistema não haverá problemas com metaestabilidade, 
+		 uma vez que os pulsos de clock necessários para realizar a multiplicação se encaixam dentro de um período de clock 
+		 do sistema MIPS. Além disso, a análise das constraints temporais foram feitas de modo a atender ambos os domínios de clock.
+		 O Time Quest Timing Analyzer foi utilizado para resolver a questão da metaestabilidade para o MIPS e para o multiplicador separadamente.	
+	
+	
+	 g) A aplicação de um multiplicador do tipo utilizado, no sistema MIPS sugerido, 
+		 é eficiente em termos de velocidade? Por que?
+	
+		A aplicação de um multiplicador de deslocamento e soma no sistema MIPS não é eficiente 
+		em termos de velocidade. Isso se deve à alta latência do multiplicador, pois ele foi implementado baseado em controle, com pipeline enrolado,
+		o que aumenta demais a latência. O multiplicador necessita de 34 ciclos de clock 
+		para realizar uma multiplicação, resultando em uma redução significativa na frequência máxima do sistema MIPS. 
+		Conforme informações anteriores, a frequência máxima de operação do sistema, 
+		que era de 72.51 MHz, caiu para 9,237 MHz ao incluir o multiplicador.
+
+		 
+	 h) Cite modificações cabíveis na arquitetura do sistema que tornaria o sistema 
+		 mais rápido (frequência de operação maior). Para cada modificação sugerida, qual 
+	    a nova latência e throughput do sistema?
+	 
+		Sabendo que o multiplicador utilizado no sistema possui uma latência alta e necessita de 34 pulsos de clock para finalizar uma multiplicação, 
+		o que reduz a máxima frequência de operação do sistema (MIPS + multiplicador). Uma modificação viável seria segmentar o terceiro estágio do pipeline (Execute) 
+		em 34 subestágios, aumentando o total de estágios do pipeline do sistema para 38. Essa modificação não afetaria o throughput do sistema e permitiria aumentar a 
+		máxima frequência de operação, pois não seria necessário dividir o clock do sistema por 34, utilizando assim um único clock com frequência de operação maior. 
+		Com essa modificação, o throughput continuaria sendo de uma instrução por ciclo de clock, mas a latência aumentaria para 38 ciclos de clock, 
+		o que exigiria uma maior complexidade no circuito e, consequentemente, um custo mais elevado. 
+		Além disso, essa modificação exigiria a mudança da arquitetura de pipeline enrolado do multiplicador para pipeline desenrolado.
+
+		Outra possível modificação seria substituir o multiplicador atual por um com menor latência e maior frequência máxima de operação. 
+		Mesmo que ainda fosse necessário utilizar dois clocks, a frequência 
+		máxima de operação do sistema seria proporcionalmente maior. 
+		O throughput continuaria sendo de uma instrução por ciclo de clock, 
+		e a latência do MIPS permaneceria em 5 ciclos de clock.
+
+*/
+
 module cpu 
 (
 	input CLK, RST,
@@ -142,6 +225,7 @@ module cpu
 	);
 	
 	
+//	assign w_MULT_OUT = 32'b0;
 	//module Multiplicador(input [15:0] Multiplicando, input [15:0] Multiplicador, input St, Clk, Reset, output Idle, Done, output [31:0] Produto); //OK
 	Multiplicador Multiplicador(
 		.Multiplicando(w_RFA_OUT[15:0]), .Multiplicador(w_RFB_OUT[15:0]),

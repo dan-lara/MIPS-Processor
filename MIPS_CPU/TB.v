@@ -7,7 +7,7 @@ module TB();
 	reg  [31:0] writeBack;
 	reg [31:0] Data_BUS_READ, Prog_BUS_READ;
 
-	wire CS, WR_RD;
+	wire CS, WR_RD, CS_P;
 	wire [31:0] ADDR, Data_BUS_WRITE, ADDR_Prog;
 	
 	//module cpu(input CLK, RST, input [31:0] Data_BUS_READ, Prog_BUS_READ, output [31:0] Data_BUS_WRITE, ADDR, ADDR_Prog, output CS, CS_P, WR_RD);
@@ -21,7 +21,10 @@ module TB();
 	
 	// Sinal de clock
 	
-	always #10 CLK = ~CLK;
+	always #20 CLK = ~CLK; // Perído de 20ns -> 50 MHz
+	
+	// CLK_SYS = 50 MHz / 34 = 1.47 MHz < 9.24 MHz
+	// CLK_MUL = 50 MHz < 314.47 MHz
 	
 	initial begin
 		$init_signal_spy("DUT/writeBack","writeBack",1);
@@ -37,7 +40,7 @@ module TB();
 	end
 	
 	
-	initial #23000 $stop;
+	initial #50000 $stop;
 		
 	
 endmodule 
