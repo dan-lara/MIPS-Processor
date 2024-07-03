@@ -1,14 +1,15 @@
-module pc (
+module pc(
 	input reset, clk,
 	output reg [31:0] Address
 );
 	
-	always @(posedge clk or posedge reset)begin 
-		if(reset)
+	always @ (posedge clk or posedge reset) begin									
+		// Se ocorrer borda de subida do Reset, o contador volta para zero
+		if (reset) 
 			Address = 32'h940; //Reseta para o endereço Grupo 4 * 0x250 = 0x940
-		else
+		else 
 			Address = Address + 32'b1; //Contagem Incremental
-	end	
+	end
 endmodule
 
 // Grupo 4 //

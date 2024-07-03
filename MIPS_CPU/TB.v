@@ -2,6 +2,7 @@
 module TB();
 	
 	reg CLK, RST;
+	reg CLK_SYS, CLK_MUL;
 	
 	reg  [31:0] writeBack;
 	reg [31:0] Data_BUS_READ, Prog_BUS_READ;
@@ -20,10 +21,13 @@ module TB();
 	
 	// Sinal de clock
 	
-	always #50 CLK = ~CLK;
+	always #10 CLK = ~CLK;
 	
 	initial begin
 		$init_signal_spy("DUT/writeBack","writeBack",1);
+		$init_signal_spy("DUT/CLK_SYS","CLK_SYS",1);
+		$init_signal_spy("DUT/CLK_MUL","CLK_MUL",1);
+		
 		Data_BUS_READ = 32'b0;
 		Prog_BUS_READ = 32'b0;
 		
@@ -33,7 +37,7 @@ module TB();
 	end
 	
 	
-	initial #10000 $stop;
+	initial #23000 $stop;
 		
 	
 endmodule 

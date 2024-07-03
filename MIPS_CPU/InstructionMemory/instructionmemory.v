@@ -1,19 +1,16 @@
-module instructionmemory #(
-//---------Sizes-----------------
-	parameter data_WIDTH = 32,
+module instructionmemory 
+#(
+	parameter DATA_WIDTH = 32,
 	parameter ADDR_WIDTH = 10
 )
 (
-//---------Input-----------------
 	input [ADDR_WIDTH-1:0] address,
 	input clk,
-//---------Output-----------------
-	output reg [data_WIDTH-1:0] dataOut
+	output reg [DATA_WIDTH-1:0] dataOut
 );
 
-//---------Interno---------------
-	reg [data_WIDTH-1:0] memoria [0:(1<<ADDR_WIDTH)-1];
-//
+	reg [DATA_WIDTH-1:0] memoria [0:(1<<ADDR_WIDTH)-1];
+
 	initial begin
 	
 		// COM PIPELINE HAZZARD	
@@ -58,7 +55,7 @@ module instructionmemory #(
 	end
 
 	always @(posedge clk) begin
-		dataOut <= memoria[address];
+			dataOut <= memoria[address];
 	end
 
 endmodule
