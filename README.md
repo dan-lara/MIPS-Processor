@@ -1,30 +1,25 @@
-# Projeto MIPS RISC em FPGA
+# MIPS RISC Project on FPGA
 
-## Descrição
+## Description
+This project involves the implementation of a RISC architecture based on MIPS CPUs on FPGA, using a Cyclone IV GX family. The instruction set is modified according to each group's specifications, and the architecture is implemented with a 32-bit word and a pipeline structure.
 
-Este projeto envolve a implementação de uma arquitetura RISC baseada em CPUs MIPS em FPGA, utilizando uma família Cyclone IV GX. O instruction set é modificado de acordo com as especificações de cada grupo, e a arquitetura é implementada com uma word de 32 bits e estrutura pipeline.
+## Objective
+The goal of this project is to develop and test a MIPS-based CPU with a custom instruction set, using a hierarchical approach. Each module is created and tested individually, then integrated to form the complete CPU.
 
-## Objetivo
+## Key Features
+- 32-bit architecture
+- Pipeline implementation with stages: Instruction Fetch, Instruction Decode, Execute, Memory, and Write Back
+- Program and data memory with 1kWord each, allocated at specific addresses
+- Tests performed at gate level with FPGA simulation
 
-O objetivo deste projeto é desenvolver e testar uma CPU baseada em MIPS com um conjunto de instruções personalizado, utilizando uma abordagem hierárquica. Cada módulo é criado e testado individualmente, e depois integrado para formar a CPU completa.
-
-## Características Principais
-
-- Arquitetura de 32 bits
-- Implementação em pipeline com estágios: Instruction Fetch, Instruction Decode, Execute, Memory e Write Back
-- Memória de programa e dados com 1kWord cada, alocadas em endereços específicos
-- Testes realizados em nível de gate com simulação em FPGA
-
-## Componentes Principais
-
-- **DataMemory**: Módulo de memória de dados
-- **InstructionMemory**: Módulo de memória de instruções
-- **ALU**: Unidade Lógica e Aritmética
-- **Control**: Unidade de controle da CPU
-- **RegisterFile**: Banco de registradores
-- **Multiplicador**: Módulo de multiplicação
-- **MUX, PC, Adder, Counter**: Outros módulos de suporte
+## Main Components
+- **DataMemory**: Data memory module
+- **InstructionMemory**: Instruction memory module
+- **ALU**: Arithmetic and Logic Unit
+- **Control**: CPU control unit
+- **RegisterFile**: Register bank
+- **Multiplier**: Multiplication module
+- **MUX, PC, Adder, Counter**: Other support modules
 
 ## TestBench
-
-O TestBench da CPU executa a expressão matemática `(B-A) * (C-D)` com valores predefinidos para A, B, C e D, salvando o resultado na última posição da memória de dados interna.
+The CPU TestBench executes the mathematical expression `(B-A) * (C-D)` with predefined values for A, B, C, and D, saving the result in the last position of the internal data memory.
